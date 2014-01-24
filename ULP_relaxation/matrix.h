@@ -19,11 +19,17 @@ private:
 	int _getColumn(){ return column ; }
 
 public:
-	matrix(int n, int m) {	//Constructor
+	matrix(){				//Empty Constructor
+		row		= 0 ;
+		column	= 0 ;
+		_matrix	= NULL ;
+	}
+
+	matrix(int n, int m, int def) {	//Constructor
 		row = n ; 
 		column = m ;
 		_matrix = new value[row*column] ;
-		for(int i = 0; i < row*column; i++) _matrix[i] = std::numeric_limits<value>::infinity() ;
+		for(int i = 0; i < row*column; i++) _matrix[i] = def ;
 	}
 
 	matrix(matrix& that){	//Copy constructor
@@ -42,4 +48,5 @@ public:
 	//Access operator. Accesses a_ij, where 1<=i<=n and 1<=j<=m
 	value& operator()(int i, int j) { return _matrix[column*(i-1)+(j-1)] ; }
 	const value& operator()(int i, int j) const { return _matrix[column*(i-1)+(j-1)] ; }
+
 } ;
