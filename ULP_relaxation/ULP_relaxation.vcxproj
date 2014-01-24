@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B46D0526-5545-456B-926F-F48A82474FE9}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ULP_relaxation</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="pmedian-dimacs\pmed01.dimacs" />
+    <None Include="pmedian-dimacs\pmed02.dimacs" />
+    <None Include="pmedian-dimacs\pmed03.dimacs" />
+    <None Include="pmedian-dimacs\pmed04.dimacs" />
+    <None Include="pmedian-dimacs\pmed05.dimacs" />
+    <None Include="pmedian-dimacs\pmed06.dimacs" />
+    <None Include="pmedian-dimacs\pmed07.dimacs" />
+    <None Include="pmedian-dimacs\pmed08.dimacs" />
+    <None Include="pmedian-dimacs\pmed09.dimacs" />
+    <None Include="pmedian-dimacs\pmed10.dimacs" />
+    <None Include="pmedian-dimacs\pmed11.dimacs" />
+    <None Include="pmedian-dimacs\pmed12.dimacs" />
+    <None Include="pmedian-dimacs\pmed13.dimacs" />
+    <None Include="pmedian-dimacs\pmed14.dimacs" />
+    <None Include="pmedian-dimacs\pmed15.dimacs" />
+    <None Include="pmedian-dimacs\pmed16.dimacs" />
+    <None Include="pmedian-dimacs\pmed17.dimacs" />
+    <None Include="pmedian-dimacs\pmed18.dimacs" />
+    <None Include="pmedian-dimacs\pmed19.dimacs" />
+    <None Include="pmedian-dimacs\pmed20.dimacs" />
+    <None Include="pmedian-dimacs\pmed21.dimacs" />
+    <None Include="pmedian-dimacs\pmed22.dimacs" />
+    <None Include="pmedian-dimacs\pmed23.dimacs" />
+    <None Include="pmedian-dimacs\pmed24.dimacs" />
+    <None Include="pmedian-dimacs\pmed25.dimacs" />
+    <None Include="pmedian-dimacs\pmed26.dimacs" />
+    <None Include="pmedian-dimacs\pmed27.dimacs" />
+    <None Include="pmedian-dimacs\pmed28.dimacs" />
+    <None Include="pmedian-dimacs\pmed29.dimacs" />
+    <None Include="pmedian-dimacs\pmed30.dimacs" />
+    <None Include="pmedian-dimacs\pmed31.dimacs" />
+    <None Include="pmedian-dimacs\pmed32.dimacs" />
+    <None Include="pmedian-dimacs\pmed33.dimacs" />
+    <None Include="pmedian-dimacs\pmed34.dimacs" />
+    <None Include="pmedian-dimacs\pmed35.dimacs" />
+    <None Include="pmedian-dimacs\pmed36.dimacs" />
+    <None Include="pmedian-dimacs\pmed37.dimacs" />
+    <None Include="pmedian-dimacs\pmed38.dimacs" />
+    <None Include="pmedian-dimacs\pmed39.dimacs" />
+    <None Include="pmedian-dimacs\pmed40.dimacs" />
+    <None Include="pmedian-dimacs\sl700.dimacs" />
+    <None Include="pmedian-dimacs\sl800.dimacs" />
+    <None Include="pmedian-dimacs\sl900.dimacs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="input.h" />
+    <ClInclude Include="matrix.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
