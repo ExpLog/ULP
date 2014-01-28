@@ -19,6 +19,7 @@ int main(int argc, char *argv []){
         
     if(!loadFromFile(instanceFilename, problem)) {
         std::cerr << "Failure loading instance file" << std::endl;
+		return 1;
     }
 
     std::vector<bool> J(problem.getRow(), true);
