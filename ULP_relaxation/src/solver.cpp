@@ -19,7 +19,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
             sorted[j].push_back(std::make_pair(cost(i+1, j+1), i+1));
         }
 		// add infinity element at the end
-        // sorted[j].push_back(std::make_pair(std::numeric_limits<double>::infinity(), cost.getRow()+1));
+        sorted[j].push_back(std::make_pair(std::numeric_limits<double>::infinity(), cost.getRow()+1));
         std::sort(sorted[j].begin(), sorted[j].end());
     }
 #ifdef DEBUG
@@ -86,6 +86,8 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 				}
 				double dj = s[best_s];
 
+				assert(j < sorted.size());
+				assert(k[j] < sorted[j].size());
 				double reduced = sorted[j][k[j]].first - u[j];
 				if(dj > reduced) {
 #ifdef DEBUG
