@@ -21,28 +21,28 @@ void floydWarshall(matrix& m) {
 }
 
 
-bool loadFromFile(std::string const& s, matrix& m){
+int loadFromFile(std::string const& s, matrix& m){
     std::ifstream file(s.c_str());
     if(file.fail()){
-        return false;
+        return -1;
     }
 
     char c;
-    int i,j,k;
+    int i,j,k,p;
 
     file >> c >> i >> j >> k;	//First line is p #vertex #edges #k
     m.resize(i, i);
 
-    while(file >> c >> i >> j >> k) {
-        m(i,j) = k;
-        m(j,i) = k;
+    while(file >> c >> i >> j >> p) {
+        m(i,j) = p;
+        m(j,i) = p;
     }
 
     file.close();
 
     floydWarshall(m);
 
-    return true;
+    return k;
 }
 
 

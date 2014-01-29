@@ -14,5 +14,9 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
 		matrix &flow, std::vector<double> &facilities);
 
+double openFacilities(std::vector<double> const& facilities);
+
+double binarySearch(double const k, matrix const& cost);
+
 #endif // SOLVER_H
 

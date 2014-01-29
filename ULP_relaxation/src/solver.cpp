@@ -6,59 +6,59 @@
 #include <limits>
 
 double dualAscent(double v, matrix const& cost, std::vector<bool> const& J, 
-		std::vector<double> &u, std::vector<double> &s)
+	std::vector<double> &u, std::vector<double> &s)
 {
-    assert(u.size() == cost.getColumn());
-    assert(J.size() == cost.getColumn());
+	assert(u.size() == cost.getColumn());
+	assert(J.size() == cost.getColumn());
 	assert(s.size() == cost.getRow());
 
-    // sorting the indices
-    std::vector<std::vector<std::pair<double, int> > > sorted(cost.getRow());
-    for(int j = 0; j < cost.getColumn(); ++j) {
-        for(int i = 0; i < cost.getRow(); ++i) {
-            sorted[j].push_back(std::make_pair(cost(i+1, j+1), i+1));
-        }
+	// sorting the indices
+	std::vector<std::vector<std::pair<double, int> > > sorted(cost.getRow());
+	for(int j = 0; j < cost.getColumn(); ++j) {
+		for(int i = 0; i < cost.getRow(); ++i) {
+			sorted[j].push_back(std::make_pair(cost(i+1, j+1), i+1));
+		}
 		// add infinity element at the end
-        sorted[j].push_back(std::make_pair(std::numeric_limits<double>::infinity(), cost.getRow()+1));
-        std::sort(sorted[j].begin(), sorted[j].end());
-    }
+		sorted[j].push_back(std::make_pair(std::numeric_limits<double>::infinity(), cost.getRow()+1));
+		std::sort(sorted[j].begin(), sorted[j].end());
+	}
 #ifdef DEBUG
-    std::cout << "Sorted indices:" << std::endl;
-    for(int j = 0; j < sorted.size(); ++j) {
-        for(int i = 0; i < sorted[j].size(); ++i) {
-            std::cout << "(" << sorted[j][i].first << "," << sorted[j][i].second << ") ";
-        }
-        std::cout << std::endl;
-    }
+	std::cout << "Sorted indices:" << std::endl;
+	for(int j = 0; j < sorted.size(); ++j) {
+		for(int i = 0; i < sorted[j].size(); ++i) {
+			std::cout << "(" << sorted[j][i].first << "," << sorted[j][i].second << ") ";
+		}
+		std::cout << std::endl;
+	}
 #endif
 
-    // step 1 - initializing variables
-    for(int j = 0; j < u.size(); ++j) {
-        u[j] = std::max(u[j], sorted[j][0].first);
-    }
+	// step 1 - initializing variables
+	for(int j = 0; j < u.size(); ++j) {
+		u[j] = std::max(u[j], sorted[j][0].first);
+	}
 #ifdef DEBUG
-    std::cout << "u[j]: " << std::endl;
-    for(int j = 0; j < u.size(); ++j) {
-        std::cout << u[j] << " ";
-    }
-    std::cout << std::endl;
+	std::cout << "u[j]: " << std::endl;
+	for(int j = 0; j < u.size(); ++j) {
+		std::cout << u[j] << " ";
+	}
+	std::cout << std::endl;
 #endif
 
-    for(int i = 0; i < s.size(); ++i) {
-        double sum = 0.0;
-        for(int j = 0; j < cost.getColumn(); ++j) {
-            sum += std::max(0.0, u[j] - cost(i+1, j+1));
-        }
-        
-        s[i] = v - sum;
+	for(int i = 0; i < s.size(); ++i) {
+		double sum = 0.0;
+		for(int j = 0; j < cost.getColumn(); ++j) {
+			sum += std::max(0.0, u[j] - cost(i+1, j+1));
+		}
+
+		s[i] = v - sum;
 		//assert(s[i] <= v && s[i] >= 0);
-    }
+	}
 #ifdef DEBUG
-    std::cout << "s[i]: " << std::endl;
-    for(int i = 0; i < s.size(); ++i) {
-        std::cout << s[i] << " ";
-    }
-    std::cout << std::endl;
+	std::cout << "s[i]: " << std::endl;
+	for(int i = 0; i < s.size(); ++i) {
+		std::cout << s[i] << " ";
+	}
+	std::cout << std::endl;
 #endif
 
 	std::vector<int> k(cost.getColumn());
@@ -103,7 +103,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 						//u[j] += dj;	We were adding to u[j] all the time. Clearly, this is wrong.
 					}
 				}
-				
+
 				u[j] += dj;
 			}
 		}
@@ -115,25 +115,25 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 #ifdef DEBUG
 	std::cout << "s[i] = [" ;
 	for(int i = 0; i < s.size(); i++){
-			std::cout << s[i] << ", ";
-		}
+		std::cout << s[i] << ", ";
+	}
 	std::cout << "]" << std::endl;
 #endif
 
 	//find zp from J
 	double opt = 0.0f ;
 	for(int j = 0; j < u.size(); ++j) opt+= u[j];
-    return opt;
+	return opt;
 }
 
 //retrieves the primal solution. assumes that matrix flow has every entry equal to 0.
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
-		matrix &flow, std::vector<double> &facilities)
+	matrix &flow, std::vector<double> &facilities)
 {
-	assert( flow.getRow == cost.getRow && flow.getColumn == cost.getColumn );
-	assert( u.size() == cost.getColumn );
-	assert( s.size() == cost.getRow );
-	assert( facilities.size() == cost.getRow );
+	assert( flow.getRow() == cost.getRow() && flow.getColumn() == cost.getColumn() );
+	assert( u.size() == cost.getColumn() );
+	assert( s.size() == cost.getRow() );
+	assert( facilities.size() == cost.getRow() );
 
 	//retrieve yi == facilities
 	int openFac = -1;
@@ -162,6 +162,83 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 		for(int j = 1; j <= flow.getColumn(); ++j){
 			opt += flow(i,j)*cost(i,j);
 		}
+	}
+
+	return opt;
+}
+
+double openFacilities(std::vector<double> const& facilities)
+{
+	double numFac = 0;
+	for(int i = 0; i < facilities.size(); ++i){
+		numFac += facilities[i];
+	}
+
+	return numFac;
+}
+
+double binarySearch(double const k, matrix const& cost)
+{
+	double opened = -1;
+	double low = 0, high = 0, mid = 0;
+	double opt;
+
+	for(int i = 1; i <= cost.getRow(); ++i){
+		for(int j = 1; j <= cost.getColumn(); ++j){
+			if( cost(i,j) > high )
+				high = cost(i,j);
+		}
+	}
+	high = high*cost.getColumn();	//if v == high, then only one facility will be opened
+
+	while( opened != k )
+	{
+		mid = (low+high)/2;
+		std::cout << "beginning: low: " << low << " mid: " << mid << " high: " << high << std::endl;
+
+		std::vector<bool> J(cost.getRow(), true);
+		std::vector<double> u(cost.getColumn(), 0.0f);
+		std::vector<double> s(cost.getRow(), 0.0f);
+
+		opt = dualAscent(mid, cost, J, u, s); 
+
+		std::cout << "Dual optimal: " << opt << std::endl;
+
+#ifdef DEBUG
+		std::cout << "s:"; 
+		for(int i = 0; i < s.size(); ++i) {
+			std::cout << " " << s[i];
+		}
+		std::cout << std::endl << std::endl;
+
+		std::cout << "u:"; 
+		for(int j = 0; j < u.size(); ++j) {
+			std::cout << " " << u[j];
+		}
+		std::cout << std::endl;
+#endif
+
+		matrix flow(cost.getRow(), cost.getColumn());
+		std::vector<double> facilities(cost.getRow());
+		std::vector<double> y(cost.getRow());
+
+		opt = retrieveSol(cost, u, s, flow, facilities);
+		opened = openFacilities(facilities);
+
+		std::cout << "Primal optimal: " << opt << std::endl;
+		std::cout << opened << " facilities opened." << std::endl;
+		std::cout << k << " facilities needed." << std::endl;
+
+		if( opened <= k ){
+			assert(opened <= k);
+			high = mid;
+		}
+		else{
+			assert(opened > k);
+			low = mid;
+		}
+
+		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
 	}
 
 	return opt;
