@@ -74,9 +74,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="pmedian-dimacs\pmed01.dimacs" />
     <None Include="pmedian-dimacs\pmed02.dimacs" />
     <None Include="pmedian-dimacs\pmed03.dimacs" />
@@ -122,9 +119,15 @@
     <None Include="pmedian-dimacs\sl900.dimacs" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="input.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="solver.h" />
+    <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\matrix.cpp" />
+    <ClCompile Include="src\solver.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\matrix.h" />
+    <ClInclude Include="src\solver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

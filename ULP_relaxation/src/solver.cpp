@@ -5,7 +5,6 @@
 #include <cassert>
 #include <limits>
 
-
 double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
         std::vector<double> &u)
 {
@@ -52,7 +51,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
         }
         
         s[i] = v - sum;
-		assert(s[i] <= v);
+		//assert(s[i] <= v && s[i] >= 0);
     }
 #ifdef DEBUG
     std::cout << "s[i]: " << std::endl;
@@ -62,7 +61,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
     std::cout << std::endl;
 #endif
 
-	std::vector<double> k(cost.getColumn());
+	std::vector<int> k(cost.getColumn());
 	for(int j = 0; j < k.size(); ++j) {
 		int inx;
 		for(inx = 0; u[j] >= sorted[j][inx].first; ++inx);
@@ -101,17 +100,24 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 				for(int i = 0; i < s.size(); ++i) {
 					if(u[j] - cost(i+1,j+1) >= 0.0) {
 						s[i] -= dj;
-						u[j] += dj;
+						//u[j] += dj;	We were adding to u[j] all the time. Clearly, this is wrong.
 					}
 				}
+				
+				u[j] += dj;
 			}
 		}
 #ifdef DEBUG
 		if(rerun) std::cout << "Rerunning" << std::endl;
+		for(int i = 0; i < s.size(); i++){
+			std::cout << "s[" << i << "] = " << s[i] << std::endl;
+		}
 #endif
 	}
 
-	// find optimal from J
-    return 0.0f;
+	//find zp from J
+	double opt = 0.0f ;
+	for(int j = 0; j < u.size(); ++j) opt+= u[j];
+    return opt;
 }
 

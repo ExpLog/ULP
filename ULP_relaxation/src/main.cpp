@@ -19,13 +19,14 @@ int main(int argc, char *argv []){
         
     if(!loadFromFile(instanceFilename, problem)) {
         std::cerr << "Failure loading instance file" << std::endl;
+		system("pause");
 		return 1;
     }
-
+	
     std::vector<bool> J(problem.getRow(), true);
     std::vector<double> u(problem.getRow(), 0.0f);
 
-    double opt = dualAscent(5, problem, J, u); 
+    double opt = dualAscent(100, problem, J, u); 
 
     std::cout << "Optimal: " << opt << std::endl;
 	
