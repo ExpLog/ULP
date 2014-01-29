@@ -52,6 +52,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
         }
         
         s[i] = v - sum;
+		assert(s[i] <= v);
     }
 #ifdef DEBUG
     std::cout << "s[i]: " << std::endl;
@@ -73,6 +74,9 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 	while(rerun) {
 		rerun = false;
 		for(int j = 0; j < J.size(); ++j) {
+#ifdef DEBUG
+			std::cout << "j: " << j << std::endl;
+#endif
 			if(J[j]) {
 				int best_s = 0;
 				for(int i = 0; i < s.size(); ++i) {
@@ -84,19 +88,25 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 
 				double reduced = sorted[j][k[j]].first - u[j];
 				if(dj > reduced) {
+#ifdef DEBUG
+					std::cout << "dj: " << dj << " > reduced: " << reduced << std::endl;
+#endif
 					dj = reduced;
 					rerun = true;
 					k[j]++;
 				}
 
 				for(int i = 0; i < s.size(); ++i) {
-					if(u[j] - cost(i+1,j+1) >= 0) {
+					if(u[j] - cost(i+1,j+1) >= 0.0) {
 						s[i] -= dj;
 						u[j] += dj;
 					}
 				}
 			}
 		}
+#ifdef DEBUG
+		if(rerun) std::cout << "Rerunning" << std::endl;
+#endif
 	}
 
 	// find optimal from J
