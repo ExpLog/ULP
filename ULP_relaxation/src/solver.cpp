@@ -5,11 +5,12 @@
 #include <cassert>
 #include <limits>
 
-double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
-        std::vector<double> &u)
+double dualAscent(double v, matrix const& cost, std::vector<bool> const& J, 
+		std::vector<double> &u, std::vector<double> &s)
 {
     assert(u.size() == cost.getColumn());
     assert(J.size() == cost.getColumn());
+	assert(s.size() == cost.getRow());
 
     // sorting the indices
     std::vector<std::vector<std::pair<double, int> > > sorted(cost.getRow());
@@ -43,7 +44,6 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
     std::cout << std::endl;
 #endif
 
-    std::vector<double> s(cost.getRow());
     for(int i = 0; i < s.size(); ++i) {
         double sum = 0.0;
         for(int j = 0; j < cost.getColumn(); ++j) {
@@ -109,11 +109,16 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 		}
 #ifdef DEBUG
 		if(rerun) std::cout << "Rerunning" << std::endl;
-		for(int i = 0; i < s.size(); i++){
-			std::cout << "s[" << i << "] = " << s[i] << std::endl;
-		}
 #endif
 	}
+
+#ifdef DEBUG
+	std::cout << "s[i] = [" ;
+	for(int i = 0; i < s.size(); i++){
+			std::cout << s[i] << ", ";
+		}
+	std::cout << "]" << std::endl;
+#endif
 
 	//find zp from J
 	double opt = 0.0f ;
@@ -121,3 +126,43 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
     return opt;
 }
 
+//retrieves the primal solution. assumes that matrix flow has every entry equal to 0.
+double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
+		matrix &flow, std::vector<double> &facilities)
+{
+	assert( flow.getRow == cost.getRow && flow.getColumn == cost.getColumn );
+	assert( u.size() == cost.getColumn );
+	assert( s.size() == cost.getRow );
+	assert( facilities.size() == cost.getRow );
+
+	//retrieve yi == facilities
+	int openFac = -1;
+	for(int i = 0; i < facilities.size(); ++i){
+		if( s[i] == 0 ){
+			facilities[i] = 1;
+			openFac = i;
+		}
+		else
+			facilities[i] = 0;
+	}
+	assert(openFac != -1);
+
+	//retrieve xij == flow
+	for(int j = 0; j < flow.getColumn(); ++j){
+		int bestCost = openFac;
+		for(int i = 0; i < flow.getRow(); ++i){
+			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
+				bestCost = i+1;
+		}
+		flow(bestCost,j+1) = 1;
+	}
+
+	double opt = 0;
+	for(int i = 1; i <= flow.getRow(); ++i){
+		for(int j = 1; j <= flow.getColumn(); ++j){
+			opt += flow(i,j)*cost(i,j);
+		}
+	}
+
+	return opt;
+}
