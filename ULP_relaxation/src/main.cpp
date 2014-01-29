@@ -28,6 +28,12 @@ int main(int argc, char *argv []){
     double opt = dualAscent(5, problem, J, u); 
 
     std::cout << "Optimal: " << opt << std::endl;
+	
+	std::cout << "u:"; 
+	for(int i = 0; i < u.size(); ++i) {
+		std::cout << " " << u[i];
+	}
+	std::cout << std::endl;
 
     return 0;
 }
