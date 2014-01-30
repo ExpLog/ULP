@@ -208,7 +208,8 @@ double binarySearch(double const k, matrix const& cost)
 	//these are used to check if we are repeating the same solution
 	double lastOpened = -std::numeric_limits<double>::infinity();
 	double lastOpt = -std::numeric_limits<double>::infinity();
-	int waitingPeriod = 10;
+	int waitingPeriod = 3;
+	bool canEnhance = false;
 
 	double low = 0, high = 0, mid = 0;
 
@@ -289,7 +290,9 @@ double binarySearch(double const k, matrix const& cost)
 
 		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
 
-		if( waitingPeriod < 0 && opened < k && (int)opt == (int)lastOpt && (int)opened == (int)lastOpened ){
+		if( waitingPeriod < 0 && (int)opt == (int)lastOpt && (int)opened == (int)lastOpened)
+			canEnhance = true;
+		if( canEnhance && opened < k  ){
 			//enhancing solution
 			std::cout << "Starting enhancement procedure." << std::endl;
 			
@@ -299,14 +302,11 @@ double binarySearch(double const k, matrix const& cost)
 			std::cout << "Primal optimal: " << opt  << std::endl;
 			std::cout << opened << " facilities opened." << std::endl;
 			std::cout << k << " facilities needed." << std::endl;
-			system("pause");
 		}
 		else{
-			//std::cout << "opt: " << opt << " last opt: " << lastOpt << " opened: " << opened << " lastOpened: " << lastOpened << std::endl;
 			waitingPeriod--;
 			lastOpt = opt;
 			lastOpened = opened;
-			//std::cout << "didn't enhance." << std::endl;
 		}
 	}
 
