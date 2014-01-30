@@ -161,7 +161,7 @@ double enhanceSol(matrix const& cost, std::vector<double> &supplier, std::vector
 	assert(supplier.size() == cost.getColumn());
 	assert(facilities.size() == cost.getRow());
 
-	std::vector<std::pair<double,int>> bestCol(cost.getRow()); 
+	std::vector<std::pair<double,int> > bestCol(cost.getRow()); 
 	double savings = 0.0f;
 	int openFac = -1;
 
