@@ -13,7 +13,9 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 		std::vector<std::vector<std::pair<double, int> > > const& sorted);
 
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
-		matrix &flow, std::vector<double> &facilities);
+		std::vector<double> &supplier, std::vector<double> &facilities);
+
+double enhanceSol(matrix const& cost, std::vector<double> &supplier, std::vector<double> &facilities, int remaining);
 
 double openFacilities(std::vector<double> const& facilities);
 

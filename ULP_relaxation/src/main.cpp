@@ -14,7 +14,7 @@ int main(int argc, char *argv []){
     }*/
 
     //std::string instanceFilename(argv[1]);
-	std::string instanceFilename("pmedian-dimacs/pmed30.dimacs");
+	std::string instanceFilename("pmedian-dimacs/pmed29.dimacs");
 
     matrix problem;
         

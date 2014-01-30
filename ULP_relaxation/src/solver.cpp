@@ -109,12 +109,12 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 
 //retrieves the primal solution. assumes that matrix flow has every entry equal to 0.
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
-	matrix &flow, std::vector<double> &facilities)
+	std::vector<double> &supplier, std::vector<double> &facilities)
 {
-	assert( flow.getRow() == cost.getRow() && flow.getColumn() == cost.getColumn() );
+	assert( supplier.size() == cost.getColumn());
+	assert( facilities.size() == cost.getRow() );
 	assert( u.size() == cost.getColumn() );
 	assert( s.size() == cost.getRow() );
-	assert( facilities.size() == cost.getRow() );
 
 	//retrieve yi == facilities
 	int openFac = -1;
@@ -129,20 +129,18 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 	assert(openFac != -1);
 
 	//retrieve xij == flow
-	for(int j = 0; j < flow.getColumn(); ++j){
+	for(int j = 0; j < supplier.size(); ++j){
 		int bestCost = openFac;
-		for(int i = 0; i < flow.getRow(); ++i){
+		for(int i = 0; i < facilities.size(); ++i){
 			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
 				bestCost = i+1;
 		}
-		flow(bestCost,j+1) = 1;
+		supplier[j] = bestCost;
 	}
 
-	double opt = 0;
-	for(int i = 1; i <= flow.getRow(); ++i){
-		for(int j = 1; j <= flow.getColumn(); ++j){
-			opt += flow(i,j)*cost(i,j);
-		}
+	double opt = 0.0f;
+	for(int j = 0; j < supplier.size(); ++j){
+		opt += cost(supplier[j], j+1);
 	}
 
 	return opt;
@@ -158,11 +156,61 @@ double openFacilities(std::vector<double> const& facilities)
 	return numFac;
 }
 
+double enhanceSol(matrix const& cost, std::vector<double> &supplier, std::vector<double> &facilities, int remaining)
+{
+	assert(supplier.size() == cost.getColumn());
+	assert(facilities.size() == cost.getRow());
+
+	std::vector<std::pair<double,int>> bestCol(cost.getRow()); 
+	double savings = 0.0f;
+	int openFac = -1;
+
+	//calculates which facilities would grant the best savings
+	for(int j = 0; j < cost.getColumn(); ++j){
+		for(int i = 0; i < cost.getRow(); ++i){
+			if( supplier[i] != 1 && cost(i+1,j+1) < cost(supplier[j],j+1) )
+				savings += cost(i+1,j+1) ;
+		}
+		bestCol[j] = std::make_pair(savings,j);
+		savings = 0;
+	}
+	std::sort(bestCol.begin(), bestCol.end());
+
+	//gets the ones with the highest savings
+	for(int i = bestCol.size(); bestCol.size() - i < remaining; --i){
+		facilities[ bestCol[i-1].second ] = 1;
+		openFac = bestCol[i-1].second;
+	}
+
+	//recalculates the suppliers
+	for(int j = 0; j < supplier.size(); ++j){
+		int bestCost = openFac;
+		for(int i = 0; i < facilities.size(); ++i){
+			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
+				bestCost = i+1;
+		}
+		supplier[j] = bestCost;
+	}
+
+	double opt = 0.0f;
+	for(int j = 0; j < supplier.size(); ++j){
+		opt += cost(supplier[j], j+1);
+	}
+
+	return opt;
+}
+
 double binarySearch(double const k, matrix const& cost)
 {
 	double opened = -1;
-	double low = 0, high = 0, mid = 0;
 	double opt;
+	
+	//these are used to check if we are repeating the same solution
+	double lastOpened = -std::numeric_limits<double>::infinity();
+	double lastOpt = -std::numeric_limits<double>::infinity();
+	int waitingPeriod = 10;
+
+	double low = 0, high = 0, mid = 0;
 
 	//finding the maximum cost
 	for(int i = 1; i <= cost.getRow(); ++i){
@@ -221,11 +269,11 @@ double binarySearch(double const k, matrix const& cost)
 		std::cout << std::endl;
 #endif
 
-		matrix flow(cost.getRow(), cost.getColumn());
+		std::vector<double> supplier(cost.getColumn());
 		std::vector<double> facilities(cost.getRow());
 		std::vector<double> y(cost.getRow());
 
-		opt = retrieveSol(cost, u, s, flow, facilities);
+		opt = retrieveSol(cost, u, s, supplier, facilities);
 		opened = openFacilities(facilities);
 
 		std::cout << "Primal optimal: " << opt  << std::endl;
@@ -240,6 +288,26 @@ double binarySearch(double const k, matrix const& cost)
 		}
 
 		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
+
+		if( waitingPeriod < 0 && opened < k && (int)opt == (int)lastOpt && (int)opened == (int)lastOpened ){
+			//enhancing solution
+			std::cout << "Starting enhancement procedure." << std::endl;
+			
+			opt = enhanceSol(cost,supplier,facilities, k - opened);
+			opened = openFacilities(facilities);
+
+			std::cout << "Primal optimal: " << opt  << std::endl;
+			std::cout << opened << " facilities opened." << std::endl;
+			std::cout << k << " facilities needed." << std::endl;
+			system("pause");
+		}
+		else{
+			//std::cout << "opt: " << opt << " last opt: " << lastOpt << " opened: " << opened << " lastOpened: " << lastOpened << std::endl;
+			waitingPeriod--;
+			lastOpt = opt;
+			lastOpened = opened;
+			//std::cout << "didn't enhance." << std::endl;
+		}
 	}
 
 	return opt;
