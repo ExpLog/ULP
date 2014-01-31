@@ -220,13 +220,6 @@ double binarySearch(double const k, matrix const& cost)
 {
 	double opened = -1;
 	double opt;
-	
-	//these are used to check if we are repeating the same solution
-	double lastOpened = -std::numeric_limits<double>::infinity();
-	double lastOpt = -std::numeric_limits<double>::infinity();
-	int waitingPeriod = 3;
-	bool canEnhance = false;
-
 	double low = 0, high = 0, mid = 0;
 
 	//finding the maximum cost
@@ -260,6 +253,10 @@ double binarySearch(double const k, matrix const& cost)
 //	}
 //#endif
 
+	unsigned bestK = 0;
+	std::vector<bool> bestFacilities(cost.getRow());
+	std::vector<int> bestSupplier(cost.getColumn());
+
 	//this is the binary search on v
 	while( opened != k )
 	{
@@ -276,7 +273,6 @@ double binarySearch(double const k, matrix const& cost)
 
 		std::vector<int> supplier(cost.getColumn());
 		std::vector<bool> facilities(cost.getRow());
-		std::vector<double> y(cost.getRow());
 
 		opt = retrieveSol(cost, u, s, supplier, facilities);
 		opened = openFacilities(facilities);
@@ -284,6 +280,12 @@ double binarySearch(double const k, matrix const& cost)
 		std::cout << "Primal optimal: " << opt  << std::endl;
 		std::cout << opened << " facilities opened." << std::endl;
 		std::cout << k << " facilities needed." << std::endl;
+
+		if(opened > bestK && opened <= k) {
+			bestK = opened;
+			bestFacilities = facilities;
+			bestSupplier = supplier;
+		}
 
 		if( opened <= k ){
 			high = mid;
@@ -296,28 +298,23 @@ double binarySearch(double const k, matrix const& cost)
 		std::cout.precision(7);
 		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
 
-		if( waitingPeriod < 0 && high-low < 1e-5 /*(int)opt == (int)lastOpt && (int)opened == (int)lastOpened*/)
-			canEnhance = true;
-		if( canEnhance && opened < k  ){
+		if( high-low < 1e-5 ){
 			//enhancing solution
 			std::cout << "Starting enhancement procedure." << std::endl;
 			
 
+			opened = bestK;
 			while(k > opened) {
-				opt = enhanceSol(cost,supplier,facilities, 1 /*k - opened*/);
-				opened = openFacilities(facilities);
+				opt = enhanceSol(cost, bestSupplier, bestFacilities, 1 /*k - opened*/);
+				opened = openFacilities(bestFacilities);
 			}
 
 			std::cout << "Primal optimal: " << opt  << std::endl;
 			std::cout << opened << " facilities opened." << std::endl;
 			std::cout << k << " facilities needed." << std::endl;
 		}
-		else{
-			waitingPeriod--;
-			lastOpt = opt;
-			lastOpened = opened;
-		}
 	}
 
 	return opt;
 }
+
