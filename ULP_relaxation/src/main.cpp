@@ -29,9 +29,6 @@ int main(int argc, char *argv []){
 	double opt = binarySearch(k, problem);
 	std::cout << "Final Primal solution: " << opt << std::endl;
 
-	int i;
-	std::cin >> i;
-
     return 0;
 }
 
