@@ -121,7 +121,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 
 //retrieves the primal solution. assumes that matrix flow has every entry equal to 0.
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
-	std::vector<double> &supplier, std::vector<double> &facilities)
+	std::vector<int> &supplier, std::vector<bool> &facilities)
 {
 	assert( supplier.size() == cost.getColumn());
 	assert( facilities.size() == cost.getRow() );
@@ -132,11 +132,11 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 	int openFac = -1;
 	for(int i = 0; i < facilities.size(); ++i){
 		if( s[i] == 0 ){
-			facilities[i] = 1;
+			facilities[i] = true;
 			openFac = i;	//this should be in the 0 to n-1 range
 		}
 		else
-			facilities[i] = 0;
+			facilities[i] = false;
 	}
 	assert(openFac != -1);
 
@@ -144,8 +144,9 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 	for(int j = 0; j < supplier.size(); ++j){
 		int bestCost = openFac+1;	//best cost values range from 1 to n
 		for(int i = 0; i < facilities.size(); ++i){
-			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
+			if( facilities[i] && cost(i+1,j+1) < cost(bestCost,j+1) ) {
 				bestCost = i+1;
+			}
 		}
 		supplier[j] = bestCost;
 	}
@@ -158,38 +159,41 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 	return opt;
 }
 
-double openFacilities(std::vector<double> const& facilities)
+
+double openFacilities(std::vector<bool> const& facilities)
 {
 	double numFac = 0;
 	for(int i = 0; i < facilities.size(); ++i){
-		numFac += facilities[i];
+		numFac += facilities[i] ? 1 : 0;
 	}
 
 	return numFac;
 }
 
-double enhanceSol(matrix const& cost, std::vector<double> &supplier, std::vector<double> &facilities, int remaining)
+double enhanceSol(matrix const& cost, std::vector<int> &supplier, std::vector<bool> &facilities, int remaining)
 {
 	assert(supplier.size() == cost.getColumn());
 	assert(facilities.size() == cost.getRow());
 
-	std::vector<std::pair<double,int> > bestCol(cost.getRow()); 
-	double savings = 0.0f;
 	int openFac = -1;
 
 	//calculates which facilities would grant the best savings
-	for(int j = 0; j < cost.getColumn(); ++j){
-		for(int i = 0; i < cost.getRow(); ++i){
-			if( supplier[i] != 1 && cost(i+1,j+1) < cost(supplier[j],j+1) )
-				savings += cost(i+1,j+1) ;
+	std::vector<std::pair<double,int> > bestCol; 
+	for(int i = 0; i < cost.getRow(); ++i) {
+		if(!facilities[i]) {
+			double savings = 0.0;
+			for(int j = 0; j < cost.getColumn(); ++j) {
+				double delta = cost(supplier[j], j+1) - cost(i+1,j+1);
+				savings += std::max(0.0, delta);
+			}
+			bestCol.push_back(std::make_pair(savings, i));
 		}
-		bestCol[j] = std::make_pair(savings,j);
-		savings = 0;
 	}
 	std::sort(bestCol.begin(), bestCol.end());
 
 	//gets the ones with the highest savings
 	for(int i = bestCol.size(); bestCol.size() - i < remaining; --i){
+		printf("opening a facility at %d to save %f\n", bestCol[i-1].second, bestCol[i-1].first);
 		facilities[ bestCol[i-1].second ] = 1;
 		openFac = bestCol[i-1].second;
 	}
@@ -270,8 +274,8 @@ double binarySearch(double const k, matrix const& cost)
 
 		std::cout << "Dual optimal: " << opt - mid*k << std::endl;	//subtracted -mid*k so that this is the actual dual value for k-medians
 
-		std::vector<double> supplier(cost.getColumn());
-		std::vector<double> facilities(cost.getRow());
+		std::vector<int> supplier(cost.getColumn());
+		std::vector<bool> facilities(cost.getRow());
 		std::vector<double> y(cost.getRow());
 
 		opt = retrieveSol(cost, u, s, supplier, facilities);
@@ -288,16 +292,21 @@ double binarySearch(double const k, matrix const& cost)
 			low = mid;
 		}
 
+		std::cout.setf(std::ios::fixed, std:: ios::floatfield);
+		std::cout.precision(7);
 		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
 
-		if( waitingPeriod < 0 && high-low < 1.0f /*(int)opt == (int)lastOpt && (int)opened == (int)lastOpened*/)
+		if( waitingPeriod < 0 && high-low < 1e-5 /*(int)opt == (int)lastOpt && (int)opened == (int)lastOpened*/)
 			canEnhance = true;
 		if( canEnhance && opened < k  ){
 			//enhancing solution
 			std::cout << "Starting enhancement procedure." << std::endl;
 			
-			opt = enhanceSol(cost,supplier,facilities, k - opened);
-			opened = openFacilities(facilities);
+
+			while(k > opened) {
+				opt = enhanceSol(cost,supplier,facilities, 1 /*k - opened*/);
+				opened = openFacilities(facilities);
+			}
 
 			std::cout << "Primal optimal: " << opt  << std::endl;
 			std::cout << opened << " facilities opened." << std::endl;

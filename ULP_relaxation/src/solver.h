@@ -13,11 +13,12 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 		std::vector<std::vector<std::pair<double, int> > > const& sorted);
 
 double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector<double> const& s,
-		std::vector<double> &supplier, std::vector<double> &facilities);
+		std::vector<int> &supplier, std::vector<bool> &facilities);
 
-double enhanceSol(matrix const& cost, std::vector<double> &supplier, std::vector<double> &facilities, int remaining);
+double enhanceSol(matrix const& cost, std::vector<int> &supplier,
+std::vector<bool> &facilities, int remaining);
 
-double openFacilities(std::vector<double> const& facilities);
+double openFacilities(std::vector<bool> const& facilities);
 
 double binarySearch(double const k, matrix const& cost);
 
