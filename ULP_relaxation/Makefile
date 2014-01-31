@@ -27,7 +27,7 @@ ifeq ($(COVERAGE),yes)
 endif
 
 
-all: $(BINDIR)/$(TARGET)
+all: $(BINDIR)/$(TARGET) $(BINDIR)/convert
 
 $(OBJDIR):
 	mkdir -p $@
@@ -39,6 +39,9 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CXX) -c $(CFLAGS) -o $@ $^
 
 $(BINDIR)/$(TARGET): $(OBJDIR)/main.o $(OBJDIR)/solver.o $(OBJDIR)/input.o $(OBJDIR)/matrix.o | $(BINDIR)
+	$(CXX) -o $@ $^ $(LDFLAGS)
+
+$(BINDIR)/convert: $(OBJDIR)/convert.o $(OBJDIR)/matrix.o $(OBJDIR)/input.o | $(BINDIR)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 debug:
