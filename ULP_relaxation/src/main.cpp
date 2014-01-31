@@ -23,6 +23,8 @@ int main(int argc, char *argv []){
         std::cerr << "Failure loading instance file" << std::endl;
 		return 2;
     }
+
+	unitTest(problem);
 	
 	double opt = binarySearch(k, problem);
 	std::cout << "Final Primal solution: " << opt << std::endl;

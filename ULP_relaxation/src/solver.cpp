@@ -49,6 +49,14 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 		k[j] = inx; 
 	}
 
+#ifdef DEBUG
+	std::cout << "k[j]: [" ;
+	for(int j = 0; j < k.size(); ++j){
+		std::cout << k[j] << ", ";
+	}
+	std::cout << "]" << std::endl;
+#endif
+
 	// step 2 - 8 -> the big for
 	bool rerun = true;
 	while(rerun) {
@@ -58,7 +66,7 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 			std::cout << "j: " << j << std::endl;
 #endif
 			if(J[j]) {
-				int best_s = 0;
+				int best_s = j;
 				for(int i = 0; i < s.size(); ++i) {
 					if(s[i] < s[best_s] && u[j] >= cost(i+1,j+1)) {
 						best_s = i;
@@ -69,6 +77,10 @@ double dualAscent(double v, matrix const& cost, std::vector<bool> const& J,
 				assert(j < sorted.size());
 				assert(k[j] < sorted[j].size());
 				double reduced = sorted[j][k[j]].first - u[j];
+
+#ifdef DEBUG
+				std::cout << "dj: " << dj << " > reduced: " << reduced << std::endl;
+#endif
 				if(dj > reduced) {
 #ifdef DEBUG
 					std::cout << "dj: " << dj << " > reduced: " << reduced << std::endl;
@@ -121,7 +133,7 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 	for(int i = 0; i < facilities.size(); ++i){
 		if( s[i] == 0 ){
 			facilities[i] = 1;
-			openFac = i;
+			openFac = i;	//this should be in the 0 to n-1 range
 		}
 		else
 			facilities[i] = 0;
@@ -130,7 +142,7 @@ double retrieveSol(matrix const& cost, std::vector<double> const& u, std::vector
 
 	//retrieve xij == flow
 	for(int j = 0; j < supplier.size(); ++j){
-		int bestCost = openFac;
+		int bestCost = openFac+1;	//best cost values range from 1 to n
 		for(int i = 0; i < facilities.size(); ++i){
 			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
 				bestCost = i+1;
@@ -232,15 +244,17 @@ double binarySearch(double const k, matrix const& cost)
 		sorted[j].push_back(std::make_pair(std::numeric_limits<double>::infinity(), cost.getRow()+1));
 		std::sort(sorted[j].begin(), sorted[j].end());
 	}
-#ifdef DEBUG
-	std::cout << "Sorted indices:" << std::endl;
-	for(int j = 0; j < sorted.size(); ++j) {
-		for(int i = 0; i < sorted[j].size(); ++i) {
-			std::cout << "(" << sorted[j][i].first << "," << sorted[j][i].second << ") ";
-		}
-		std::cout << std::endl;
-	}
-#endif
+
+	//this is a pain when debugging the rest of the stuff
+//#ifdef DEBUG
+//	std::cout << "Sorted indices:" << std::endl;
+//	for(int j = 0; j < sorted.size(); ++j) {
+//		for(int i = 0; i < sorted[j].size(); ++i) {
+//			std::cout << "(" << sorted[j][i].first << "," << sorted[j][i].second << ") ";
+//		}
+//		std::cout << std::endl;
+//	}
+//#endif
 
 	//this is the binary search on v
 	while( opened != k )
@@ -255,20 +269,6 @@ double binarySearch(double const k, matrix const& cost)
 		opt = dualAscent(mid, cost, J, u, s, sorted); 
 
 		std::cout << "Dual optimal: " << opt - mid*k << std::endl;	//subtracted -mid*k so that this is the actual dual value for k-medians
-
-#ifdef DEBUG
-		std::cout << "s:"; 
-		for(int i = 0; i < s.size(); ++i) {
-			std::cout << " " << s[i];
-		}
-		std::cout << std::endl << std::endl;
-
-		std::cout << "u:"; 
-		for(int j = 0; j < u.size(); ++j) {
-			std::cout << " " << u[j];
-		}
-		std::cout << std::endl;
-#endif
 
 		std::vector<double> supplier(cost.getColumn());
 		std::vector<double> facilities(cost.getRow());
@@ -290,7 +290,7 @@ double binarySearch(double const k, matrix const& cost)
 
 		std::cout << "end: low: " << low << " mid: " << mid << " high: " << high << std::endl << std::endl;
 
-		if( waitingPeriod < 0 && (int)opt == (int)lastOpt && (int)opened == (int)lastOpened)
+		if( waitingPeriod < 0 && high-low < 1.0f /*(int)opt == (int)lastOpt && (int)opened == (int)lastOpened*/)
 			canEnhance = true;
 		if( canEnhance && opened < k  ){
 			//enhancing solution
