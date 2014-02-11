@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "CPUTimer.h"
 #include "input.h"
 #include "solver.h"
 
@@ -14,7 +15,6 @@ int main(int argc, char *argv []){
     }
 
     std::string instanceFilename(argv[1]);
-	//std::string instanceFilename("pmedian-dimacs/pmed40.dimacs");
 
     matrix problem;
         
@@ -24,10 +24,14 @@ int main(int argc, char *argv []){
 		return 2;
     }
 
-	unitTest(problem);
-	
+    unitTest(problem);
+
+    CPUTimer timer;
+
+    timer.start();
 	double opt = binarySearch(k, problem);
-	std::cout << "Final Primal solution: " << opt << std::endl;
+	timer.stop();
+	std::cout << "Final Primal solution: " << opt << " Time: " << timer.getCPUTotalSecs() << std::endl;
 
     return 0;
 }
