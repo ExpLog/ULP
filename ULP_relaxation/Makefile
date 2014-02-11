@@ -13,7 +13,7 @@ BINDIR=bin
 
 #CXX=g++
 
-#CFLAGS = -Wall -ansi -pedantic
+CFLAGS = -Wall
 
 CDEBUG = -g -DDEBUG
 
@@ -38,7 +38,7 @@ $(BINDIR):
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CXX) -c $(CFLAGS) -o $@ $^
 
-$(BINDIR)/$(TARGET): $(OBJDIR)/main.o $(OBJDIR)/solver.o $(OBJDIR)/input.o $(OBJDIR)/matrix.o | $(BINDIR)
+$(BINDIR)/$(TARGET): $(OBJDIR)/main.o $(OBJDIR)/solver.o $(OBJDIR)/input.o $(OBJDIR)/matrix.o $(OBJDIR)/CPUTimer.o | $(BINDIR)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 $(BINDIR)/convert: $(OBJDIR)/convert.o $(OBJDIR)/matrix.o $(OBJDIR)/input.o | $(BINDIR)
