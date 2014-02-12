@@ -33,6 +33,9 @@ int main(int argc, char *argv []){
 	timer.stop();
 	std::cout << "Final Primal solution: " << opt << " Time: " << timer.getCPUTotalSecs() << std::endl;
 
+//	int i = 0;
+//	std::cin >> i;
+
     return 0;
 }
 

@@ -200,7 +200,7 @@ double enhanceSol(matrix const& cost, std::vector<int> &supplier, std::vector<bo
 
 	//recalculates the suppliers
 	for(int j = 0; j < supplier.size(); ++j){
-		int bestCost = openFac;
+		int bestCost = openFac+1;
 		for(int i = 0; i < facilities.size(); ++i){
 			if( facilities[i] == 1 && cost(i+1,j+1) < cost(bestCost,j+1) )
 				bestCost = i+1;
