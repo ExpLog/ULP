@@ -29,9 +29,11 @@ int main(int argc, char *argv []){
     CPUTimer timer;
 
     timer.start();
-	double opt = binarySearch(k, problem);
+	std::pair<double, double> opt = binarySearch(k, problem);
 	timer.stop();
-	std::cout << "Final Primal solution: " << opt << " Time: " << timer.getCPUTotalSecs() << std::endl;
+	std::cout << "Final Primal solution: " << opt.first
+		<< " Gap upper bound: " << opt.second
+		<< " Time: " << timer.getCPUTotalSecs() << std::endl;
 
 //	int i = 0;
 //	std::cin >> i;

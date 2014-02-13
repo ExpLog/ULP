@@ -2,6 +2,7 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -20,7 +21,7 @@ std::vector<bool> &facilities, int remaining);
 
 double openFacilities(std::vector<bool> const& facilities);
 
-double binarySearch(double const k, matrix const& cost);
+std::pair<double, double> binarySearch(double const k, matrix const& cost);
 
 #endif // SOLVER_H
 

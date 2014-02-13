@@ -13,7 +13,7 @@ BINDIR=bin
 
 #CXX=g++
 
-CFLAGS = -Wall
+CFLAGS = -O3 -Wall
 
 CDEBUG = -g -DDEBUG
 

@@ -216,7 +216,7 @@ double enhanceSol(matrix const& cost, std::vector<int> &supplier, std::vector<bo
 	return opt;
 }
 
-double binarySearch(double const k, matrix const& cost)
+std::pair<double,double> binarySearch(double const k, matrix const& cost)
 {
 	double opened = -1;
 	double opt;
@@ -254,6 +254,7 @@ double binarySearch(double const k, matrix const& cost)
 //#endif
 
 	unsigned bestK = 0;
+	double bestDual = 0.0;
 	std::vector<bool> bestFacilities(cost.getRow());
 	std::vector<int> bestSupplier(cost.getColumn());
 
@@ -270,6 +271,7 @@ double binarySearch(double const k, matrix const& cost)
 		opt = dualAscent(mid, cost, J, u, s, sorted); 
 
 		std::cout << "Dual optimal: " << opt - mid*k << std::endl;	//subtracted -mid*k so that this is the actual dual value for k-medians
+		bestDual = std::max(bestDual, opt - mid*k);
 
 		std::vector<int> supplier(cost.getColumn());
 		std::vector<bool> facilities(cost.getRow());
@@ -315,6 +317,6 @@ double binarySearch(double const k, matrix const& cost)
 		}
 	}
 
-	return opt;
+	return std::make_pair(opt, opt - bestDual);
 }
 
